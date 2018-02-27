@@ -58,16 +58,6 @@ Kareem Amin (Clay Labs), Amir Chaudhry (Docker), Sarah Conway (Linux Foundation)
 
 ## サーバーレスのユースケース
 
-While serverless computing is widely available, it is still relatively new. In general, a serverless approach should be considered a top choice when the workload is:
-
-* Asynchronous, concurrent, easy to parallelize into independent units of work
-
-* Infrequent or has sporadic demand, with large, unpredictable variance in scaling requirements
-
-* Stateless, ephemeral, without a major need for instantaneous cold start time
-
-* Highly dynamic in terms of changing business requirements that drive a need for accelerated developer velocity
-
 サーバーレスコンピューティングは広く普及している一方、比較的新しいものです。一般的に、ワークロードが次のような場合、サーバーレスのアプローチを最善の選択肢と考えることができるでしょう：
 
 * 非同期、並行、独立した作業単位への並列化が容易
@@ -116,105 +106,116 @@ IaaS、PaaS、または CaaS ソリューションに適していない非HTTP�
 
 ### マルチメディア処理
 
-A common use case, and one of the earliest to crystallize, is the implementation of functions that execute some transformational process in response to a new file upload. For example, if an image is uploaded to an object storage service such as Amazon S3, that event triggers a function to create a thumbnail version of the image and store it back to another object storage bucket or Database-as-a-Service. This is an example of a fairly atomic, parallelizable compute task that runs infrequently and scales in response to demand.
+一般的なユースケースであり、具体化するのが最も早い例の1つは、新しいファイルアップロードに対応して、ある種の変換プロセスを実行する関数の実装です。たとえば、画像が Amazon S3 などのオブジェクトストレージサービスにアップロードされた場合、そのイベントは画像のサムネイルバージョンを作成し、別のオブジェクトストレージバケットまたはデータベースサービスに保存する関数を起動します。これは、あまり頻繁に実行されず、要求に応じてスケールする、非常にアトミックな並列処理可能な計算タスクの例です。
 
-Examples include:
+例としては：
 
-* [Santander](https://www.google.com/url?q=https://www.slideshare.net/DanielKrook/optimize-existing-banking-applications-and-build-new-ones-faster-with-ibm-cloud-functions&sa=D&ust=1515189586080000&usg=AFQjCNHFOCjEEqR4s6ZzkCO3Wy0t79wfOw) built a proof of concept using serverless functions to process mobile check deposits using optical character recognition. This type of workload is quite variable, and processing demand on payday—once every two weeks—can be several times larger than the most idle time of the pay period.
+* [Santander](https://www.google.com/url?q=https://www.slideshare.net/DanielKrook/optimize-existing-banking-applications-and-build-new-ones-faster-with-ibm-cloud-functions&sa=D&ust=1515189586080000&usg=AFQjCNHFOCjEEqR4s6ZzkCO3Wy0t79wfOw) は光学式文字認識を使用してモバイルチェックデポジットを処理するサーバーレスによるPoCを作成しました。このタイプのワークロードは非常に変動が激しく、2週間に1回の給料日の処理要求は、給与期間の最もアイドルな時間の数倍です。
 
 * Categorizing a film automatically by [passing each video frame through an image recognition service](https://github.com/IBM-Bluemix/openwhisk-darkvisionapp) to extract actor, sentiment, and objects; or processing drone footage of a disaster area to estimate the extent of damage.
 
-### Database changes or change data capture (CDC)
+### データベースの変更または変更データキャプチャ（Change Data Capture, CDC）
 
-In this scenario, a function is invoked when data is inserted, modified, or deleted from a database. In this case, it functions similarly to a traditional SQL trigger, almost like a side effect or action parallel to the main synchronous flow. The effect is to execute an asynchronous piece of logic that can modify something within that same database (such as logging to an audit table), or in turn invoke an external service (such as sending an email) or updating an additional database such as in the case of DB CDC (change data capture) use case. These use cases can vary in their frequency and need for atomicity and consistency due to business need and distribution of services that handle the changes.
+このシナリオでは、データがデータベースに挿入、変更、または削除されたときに関数が呼び出されます。この場合、従来のSQLトリガーのように、メインの同期フローと並列な副作用やふるまいと同等の役割を果たします。その結果、非同期のロジックを実行して、同じデータベース内の何かを変更（監査テーブルへのロギングなど）したり、外部サービス（電子メールの送信など）を呼び出したり、データベースCDC（変更データキャプチャ）のユースケースのような追加データベースの変更を行うことができます。これらのユースケースは、ビジネス要件および変更に伴うサービス配布次第で、関数の実行頻度とアトミック性・一貫性の必要度合いが異なる場合があります。
 
-Examples include:
+例としては：
 
-* Auditing changes to a database, or ensuring that they meet a particular quality or analytics standard for acceptable changes.
+* データベースの変更を監査したり、容認できる変更のために特定の品質または分析基準を満たしていることを確認します。
 
-* Automatically translating data to another language as or shortly after it’s entered.
+* 入力された直後にデータを別の言語に自動的に翻訳します。
 
-### IoT sensor input messages
+### IoT センサーの入力メッセージ
 
-With the explosion of autonomous devices connected to networks comes additional traffic that is both massive in volume and uses lighter-weight protocols than HTTP. Efficient cloud services must be able to quickly respond to messages and scale in response to their proliferation or sudden influx of messages. Serverless functions can efficiently manage and filter MQTT messages from IoT devices. They can both scale elastically and shield other services downstream from the load.
+ネットワークに接続された自律型デバイスが爆発的に増加するにつれて、HTTPよりも大容量で、軽量なプロトコルを使用するトラフィックが増えています。効率的なクラウドサービスは、メッセージに迅速に対応し、デバイスの急増や急激なメッセージの流入に対応してすばやく拡張できる必要があります。 サーバーレスの関数は、IoTデバイスからのMQTTメッセージを効率的に管理およびフィルタリングできます。弾力的に拡張し、負荷から下流の他のサービスを防御することができます。
 
-Examples include:
+例としては：
 
-* GreenQ’s sanitation use case (the Internet of Garbage) where the [truck pickup route was optimized](https://www.wired.com/2014/05/how-the-internet-of-garbage-cans-will-remake-our-future-cities/) based on the relative fullness of trash receptacles.
+* GreenQ の 公衆衛生でのユースケース（ゴミのインターネット）では、ゴミ箱の相対的なたまり具合に基づいて[トラックの回収ルートが最適化されていました](https://www.wired.com/2014/05/how-the-internet-of-garbage-cans-will-remake-our-future-cities/)。
 
-* Using serverless on an IoT device (like [AWS Greengrass](https://aws.amazon.com/greengrass/)) to collect local sensor data, normalize it, compare with triggers, and push events up to an aggregation unit/cloud.
+* （[AWS Greengrass](https://aws.amazon.com/greengrass/)のような）IoT デバイスでサーバーレスを使用して、ローカルセンサーデータを収集し、正規化し、トリガー条件と比較し、イベントを集約ユニット/クラウドにプッシュします。
 
-### Stream processing at scale
+### スケーラブルなストリーム処理
 
-Another non-transactional, non-request/response type of workload is processing data within a potentially infinite stream of messages. Functions can be connected to a source of messages that must each be read and processed from an event stream. Given the high performance, highly elastic, and compute intensive processing workload, this can be an important fit for serverless. In many cases, stream processing requires comparing data against a set of context objects (in a NoSQL or in-mem DB) or aggregating and storing data from streams into a object or a database system.
+別の非トランザクション、非リクエスト-レスポンスのタイプのワークロードは、無限メッセージストリームのデータを処理することです。関数は、メッセージのソースに接続できます。それらのメッセージは、イベントストリームからそれぞれ読み込まれ、処理されなければなりません。高性能で弾力性があり、処理負荷の高いワークロードであることを考慮すると、サーバーレスにふさわしいといえます。多くの場合、ストリーム処理では、データを一連のコンテキストオブジェクト（NoSQL または in-memory DB内）と比較するか、またはストリームからのデータを集約してオブジェクトまたはデータベースシステムに格納する必要があります。
 
-Examples include:
+例としては：
 
-* Mike Roberts has a good [Java/AWS Kinesis example](https://martinfowler.com/articles/serverless.html) handling billions of messages efficiently.
+* Mike Roberts 氏は数十億のメッセージを効率的に処理する優れた [Java/AWS Kinesis](https://martinfowler.com/articles/serverless.html) の例を持っています。
 
-* SnapChat uses [serverless on Google AppEngine](https://www.recode.net/2017/3/1/14661126/snap-snapchat-ipo-spending-2-billion-google-cloud) to process messages.
+* SnapChat はメッセージ処理に [serverless on Google AppEngine](https://www.recode.net/2017/3/1/14661126/snap-snapchat-ipo-spending-2-billion-google-cloud) を使っています。
 
-### Chat bots
+### チャットボット
 
-Interacting with humans doesn’t necessarily require millisecond response time, and in many ways a bot that replies to humans may actually benefit from a slight delay to make the conversation feel more natural. Because of this, a degree of initial latency from waiting for the function to be loaded from a cold start may be acceptable. A bot may also need to be extremely scalable when added to a popular social network like Facebook, WhatsApp, or Slack, so pre-provisioning an always-on daemon in a PaaS or IaaS model in anticipation of sudden or peak demand may not be as efficient or cost-effective as a serverless approach.
+人間とのやりとりは必ずしもミリ秒単位の応答時間を必要とせず、人間に応対するボットは、会話をより自然に感じさせるために少し遅れて回答したほうが良いでしょう。よって、コールドスタートから関数のロードを待つことによる初期レイテンシがある程度許容されます。ボットを、Facebook、WhatsApp、Slackなどの人気のあるソーシャルネットワークに組み込む場合、非常にスケーラブルである必要があるため、突然のピーク需要を予測して常時起動するデーモンをPaaSまたはIaaSモデルで事前にプロビジョニングするのでは、効果面ないしコスト効率面でサーバレスのアプローチには及ばないでしょう。
 
-Examples include:
+例としては：
 
-* Support and sales bots that are plugged into large social media services such as Facebook or other high traffic sites.
+* Facebook やその他の高トラフィックサイトなどの大規模なソーシャルメディアサービスに接続されているサポートとセールス用のボット。
 
-* Messaging app Wuu uses Google Cloud Functions to enable users to [create and share content that disappears](https://firebase.google.com/docs/functions/case-studies/wuu.pdf) in hours or seconds.
+* メッセージングアプリ Wuu は Google Cloud 機能を使用して、[数時間または数秒で消えるコンテンツ](https://firebase.google.com/docs/functions/case-studies/wuu.pdf)を作成して共有できるようにしています。
 
-* See also the HTTP REST APIs and web applications below.
+* 後述の HTTP REST API と Web アプリケーションについても参照。
 
-### Batch jobs or scheduled tasks
+### バッチジョブまたはスケジュールタスク
 
-Jobs that require intense parallel computation, IO, or network access for only a few minutes a day in an asynchronous manner can be a great fit for serverless. Jobs can consume the resources they need efficiently for the time they run in an elastic manner, and not incur resource costs for the rest of the day when they are not used.
+非同期で1日に数分だけ強力な並列計算、IO、またはネットワークアクセスを必要とするジョブは、サーバーレスに適しています。ジョブは、弾力的に動作する時間のために必要なリソースを効率的に消費することができ、使用されない残りの日のリソースコストは発生しません。
 
-Examples include:
+例としては：
 
-* A scheduled task could be a backup job that runs every night.
+* 毎晩走るバックアップジョブのスケジュールタスク。
 
-* Jobs that send many emails in parallel scale out function instances.
+* 関数が並列にスケールされたメール送信ジョブ。
 
-### HTTP REST APIs and web applications
+### HTTP REST API と Web アプリケーション
 
-Traditional request/response workloads are still quite a good fit for serverless whether the workload is a static web site or one that uses a programming language like JavaScript or Python to generate a response on demand. Even though they may incur a startup cost for the first user, there is precedent for that type of delay in other compute models, such as the initial compilation of a JavaServer Page into a servlet, or starting up a new JVM to handle additional load. The benefit is that individual REST calls (each of the 4 GET, POST, UPDATE, and DELETE endpoints in a microservice, for example) can scale independently and be billed separately, even if they share a common data backend.
+リクエスト/レスポンスのワークロードは、静的なWebサイトでも、JavaScriptやPythonなどのプログラミング言語を使用して動的にレスポンスを生成する場合でも、サーバーレスに適しています。最初のユーザーの起動コストが発生する可能性がありますが、Java サーバーのサーブレットへの初期コンパイルや、追加の負荷を処理するための新しいJVMの起動など、他の計算モデルでも遅延が生じる先例があります。サーバーレスで行うメリットは、共通のデータバックエンドを共有していても、個々のREST呼び出し（たとえば、マイクロサービス内の4つのGET、POST、UPDATE、およびDELETEエンドポイントのそれぞれ）を個別に拡張し、別々に請求できることです。
 
-Examples include:
+例としては：
 
 * [Australian census ported to a serverless architecture shows speed of development, cost improvements, and autoscaling](https://medium.com/serverless-stories/challenge-accepted-building-a-better-australian-census-site-with-serverless-architecture-c5d3ad836bfa).
 
-* ["How I cut my AWS bill by 90% by going serverless."](https://medium.freecodecamp.org/how-i-cut-my-aws-bill-by-90-35c937596f0c)
+* [サーバレスアーキテクチャに移植されたオーストラリアの国勢調査は、開発のスピード、コストの改善、自動スケーリングについて説明しています。](https://medium.com/serverless-stories/challenge-accepted-building-a-better-australian-census-site-with-serverless-architecture-c5d3ad836bfa)
 
-* AutoDesk example: ["Costs a small fraction (~1%) of the traditional cloud approach."](https://www.infoq.com/news/2016/08/serverless-autodesk)
+* [「私がサーバーレス化によってAWS費用を90%削減した方法」](https://medium.freecodecamp.org/how-i-cut-my-aws-bill-by-90-35c937596f0c)
 
-* Online coding/education (exam, test, etc.) runs exercise code in an event-driven environment, and provides feedback to the user based on a comparison with expected results for that exercise. The serverless platform runs the answer-checking on demand and scale as needed, paying for only the time during which code is running.
+* AutoDesk 社の例: ["Costs a small fraction (~1%) of the traditional cloud approach."](https://www.infoq.com/news/2016/08/serverless-autodesk)
 
-### Mobile backends
+* オンラインのコーディング/教育（試験、テストなど）では、イベントドリブンでエクササイズコードを実行し、そのエクササイズの予想結果との比較に基づいてユーザーにフィードバックを提供します。サーバーレスプラットフォームは、オンデマンドで回答チェックを実行し必要に応じてスケールし、コードが実行されている時間だけ支払います。
 
-Using serverless for mobile backend tasks is also attractive. It allows developers to build on the REST API backend workload above the BaaS APIs, so they can spend time optimizing a mobile app and less on scaling its backend. Examples include: optimizing graphics for a video game and not investing in servers when the game becomes a viral hit; or for consumer business applications that need quick iterations to find product/market fit, or when time-to-market is critical. Another example is in batching notifications to users or processing other asynchronous tasks for an offline-first experience.
+### モバイルバックエンド
 
-Examples include:
+モバイルバックエンドタスクにサーバーレスを使用することも魅力的です。開発者は、BaaS API 上に REST API のバックエンドを構築することで、モバイルアプリの最適化に時間をかけることができ、バックエンドのスケーリングについては時間を使わなくて良くなります。
+以下はその例です。
 
-* Mobile apps that need a small amount of server-side logic; developers can focus their effort on native code development.
+* ゲームのグラフィックを最適化する一方、ゲームがウイルスに感染したときにサーバにお金を使いたくない場合
+* 製品/市場の適合性を見つけるために高速なイテレーションを回す必要がある消費者向けアプリケーションや、市場投入までの時間が重要な場合
+* ユーザーへの通知をバッチ処理すること、またはオフラインファーストのエクスペリエンスのために非同期タスクを処理する場合
+
+例としては：
+
+* 少量のサーバーサイドロジックを必要とするモバイルアプリ。開発者はネイティブコード開発に専念することができます。
 
 * Mobile apps that use direct-from-mobile access to BaaS using configured security policy, such as Firebase Auth/Rules or Amazon Cognito, with event-triggered serverless compute.
 
-* "Throwaway" or short-term use mobile applications, such as the scheduling app for a large conference, that has very little demand on the weekends before and after the conference, but needs to scale up and down greatly; surges post-keynote based on schedule viewing demands over the course of the event on Monday and Tuesday mornings, then back down at midnight those days.
+* 設定済のセキュリティポリシーを使ったBaaSへの直接アクセスがあるモバイルアプリ。BaaSは例えばFirebase の Auth/Rules や Amazon Cognito など。これらはイベントトリガのサーバレスコンピューティングを採用しています。
 
-### Business Logic
+* 大規模なカンファレンス用のスケジューリングアプリのような、使い捨て、または短期間のモバイルアプリ。カンファレンスの前後の週末にはほとんど需要がないが、極端なスケールアップ・スケールダウンが必要となります。月曜日と火曜日の午前中のイベントの進行中の聴講予定に基づいてキーノート後に急上昇させ、その後、その日の真夜中に戻します。
 
-The orchestration of microservice workloads that execute a series of steps in a business process is another good use case for serverless computing when deployed in conjunction with a management and coordination function. Functions that perform specific business logic such as order request and approval, stock trade processing, etc. can be scheduled and coordinated with a stateful manager. Event requests from client portals can be serviced by such a coordination function and delivered to appropriate serverless functions.
+### ビジネスロジック
 
-Examples include:
+ビジネスプロセスで一連のステップを実行するマイクロサービスワークロードのオーケストレーションは、管理および調整のための関数と組み合わせて使用する場合、サーバーレスコンピューティングのもう1つの良い使用例です。注文依頼や承認、株式取引処理などの特定のビジネスロジックを実行する機能は、状態をもつマネージャーによりスケジュールを設定して調整することができます。クライアントポータルからのイベント要求は、このような連携機能によって処理され、適切なサーバーレスの関数へ渡されます。
 
-A trading desk that handles stock market transactions and processes trade orders and confirmations from a client. The orchestrator manages the trades using a graph of states. An initial state accepts a trade request from a client portal and delivers the request to a microservice function to parse the request and authenticate the client. Subsequent states steer the workflows based on a buy or sell transaction, validate fund balances, ticker, etc. and send a confirmation to the client. On receipt of a confirmation request event from the client, follow-on states invoke functions that manage execution of the trade, update the account, and notify the client of the completion of the transaction.
+例としては：
 
-### Continuous Integration Pipeline
+株式市場の取引を処理し、顧客からの取引注文と確認処理を行うトレーディングデスク。オーケストレーターは、状態グラフを使用して取引を管理します。最初の状態は、クライアントポータルからの取引要求を受け取り、要求を解析してクライアントを認証するために要求をマイクロサービスの関数に渡すところです。 次の状態で、購入または売買取引に基づいてワークフローを調整し、資金残高、ティッカーなどを検証し、顧客に確認を送信します。クライアントからの確認要求イベントを受信すると、後続の状態へと流れ、取引の実行を管理し、アカウントを更新し、トランザクションの完了をクライアントに通知する関数を呼び出します。
+
+### 継続的インテグレーションのパイプライン
 
 A traditional CI pipeline includes a pool of build slave hosts waiting idle for jobs to be dispatched. Serverless is a good pattern to remove the need for pre-provisioned hosts and reduce costs. Build jobs are triggered by new code commit or PR merged. A function call is invoked to run the build and test case, executing only for the time needed, and not incurring costs while unused. This lowers costs and can reduce bottlenecks through autoscaling to meet demand.
 
-Examples include:
+伝統的なCIパイプラインには、ジョブをディスパッチするためにアイドル状態で待機するスレーブがいます。サーバーレスの場合、事前にプロビジョニングされたホストは不要になり、コストを削減できる良いパターンです。ビルドジョブは、新しいコードのコミットまたはPRマージによって起動します。関数はビルドとテストケースが必要なときだけ呼び出され、必要な時間だけ実行し、使用されていない間はコストがかかりません。これにより、コストが削減され、需要に見合うだけのオートスケーリングというボトルネックが削減されます
+
+例としては：
 
 * [Serverless CI - Hyper.sh integration for Buildbot](https://blog.hyper.sh/serverless-ci-hyper-docker-integration-for-buildbot.html)
 
